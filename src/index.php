@@ -14,33 +14,47 @@ use ComBank\Transactions\WithdrawTransaction;
 use ComBank\Exceptions\BankAccountException;
 use ComBank\Exceptions\FailedTransactionException;
 use ComBank\Exceptions\ZeroAmountException;
+use ComBank\Exceptions\InvalidArgsException;
 
 require_once 'bootstrap.php';
 
 
 //---[Bank account 1]---/
 // create a new account1 with balance 400
+$bankAccount1 = new BankAccount(400.0, 'john.smith@example.com');
 pl('--------- [Start testing bank account #1, No overdraft] --------');
+
 try {
     // show balance account
-
+    pl('My balance : ' . $bankAccount1->getBalance());
     // close account
-
+    pl('Close my account: ' . $bankAccount1->closeAcount());
     // reopen account
-
+    pl('Reopen bank account : ' . $bankAccount1->reopenAcount());
 
     // deposit +150 
     pl('Doing transaction deposit (+150) with current balance ' . $bankAccount1->getBalance());
+    $bankAccount1->transaction(new DepositTransaction(150.0));
 
     pl('My new balance after deposit (+150) : ' . $bankAccount1->getBalance());
 
     // withdrawal -25
+
     pl('Doing transaction withdrawal (-25) with current balance ' . $bankAccount1->getBalance());
-
+    $bankAccount1->transaction(new WithdrawTransaction(25.0));
+    
+    // $bankAccount1->transaction(new WithdrawTransaction(25.0));
+    
+    pl('My new balance after withdrawal (-25): ' . $bankAccount1->getBalance());
+    
+    
     pl('My new balance after withdrawal (-25) : ' . $bankAccount1->getBalance());
-
+    
     // withdrawal -600
     pl('Doing transaction withdrawal (-600) with current balance ' . $bankAccount1->getBalance());
+    $bankAccount1->transaction(new WithdrawTransaction(600.0));
+
+    // $bankAccount1->transaction(new WithdrawTransaction(600.0));
 
 } catch (ZeroAmountException $e) {
     pl($e->getMessage());
@@ -55,29 +69,34 @@ pl('My balance after failed last transaction : ' . $bankAccount1->getBalance());
 
 
 //---[Bank account 2]---/
+$bankAccount2 = new BankAccount(200.0, 'jane.doe@example.com');
+$bankAccount2->applyOverdraft(new SilverOverdraft());
 pl('--------- [Start testing bank account #2, Silver overdraft (100.0 funds)] --------');
 try {
-    
+
     // show balance account
-   
     // deposit +100
     pl('Doing transaction deposit (+100) with current balance ' . $bankAccount2->getBalance());
-    
+$bankAccount2->transaction(new DepositTransaction(100.0));   // tras "deposit (+100)"
+
     pl('My new balance after deposit (+100) : ' . $bankAccount2->getBalance());
 
     // withdrawal -300
     pl('Doing transaction deposit (-300) with current balance ' . $bankAccount2->getBalance());
-   
+$bankAccount2->transaction(new WithdrawTransaction(300.0));  // tras "(-300)"
+
     pl('My new balance after withdrawal (-300) : ' . $bankAccount2->getBalance());
+$bankAccount2->transaction(new WithdrawTransaction(50.0));   // tras "(-50)"
 
     // withdrawal -50
     pl('Doing transaction deposit (-50) with current balance ' . $bankAccount2->getBalance());
-    
+
     pl('My new balance after withdrawal (-50) with funds : ' . $bankAccount2->getBalance());
 
     // withdrawal -120
+    $bankAccount2->transaction(new WithdrawTransaction(120.0));  // tras "(-120)" → debe fallar
+
     pl('Doing transaction withdrawal (-120) with current balance ' . $bankAccount2->getBalance());
-    
 } catch (FailedTransactionException $e) {
     pl('Error transaction: ' . $e->getMessage());
 }
@@ -85,14 +104,27 @@ pl('My balance after failed last transaction : ' . $bankAccount2->getBalance());
 
 try {
     pl('Doing transaction withdrawal (-20) with current balance : ' . $bankAccount2->getBalance());
-    
 } catch (FailedTransactionException $e) {
     pl('Error transaction: ' . $e->getMessage());
 }
 pl('My new balance after withdrawal (-20) with funds : ' . $bankAccount2->getBalance());
+$bankAccount2->transaction(new WithdrawTransaction(20.0));   // dentro del segundo try → debe pasar
 
 try {
-   
 } catch (BankAccountException $e) {
     pl($e->getMessage());
+}
+pl('--------- [Start testing email validation] --------');
+try {
+    $bankAccount3 = new BankAccount(100.0, 'john.smith@example.com');
+    pl('Account created successfully. Email: ' . $bankAccount3->getEmail());
+} catch (InvalidArgsException $e) {
+    pl('Error: ' . $e->getMessage());
+}
+
+try {
+    $bankAccount4 = new BankAccount(100.0, 'johnexample.com');
+    pl('Account created successfully. Email: ' . $bankAccount4->getEmail());
+} catch (InvalidArgsException $e) {
+    pl('Account creation rejected: ' . $e->getMessage());
 }
