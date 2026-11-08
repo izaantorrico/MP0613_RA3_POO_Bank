@@ -1,7 +1,5 @@
 <?php namespace ComBank\OverdraftStrategy;
 
-      use ComBank\OverdraftStrategy\Contracts\OverdraftInterface;
-
 /**
  * Created by VS Code.
  * User: JPortugal
@@ -9,11 +7,24 @@
  * Time: 12:27 PM
  */
 
+use ComBank\OverdraftStrategy\Contracts\OverdraftInterface;
+use Override;
+
 class NoOverdraft implements OverdraftInterface
-
-
-public function isGrantO
 {
+    public function isGrantOverdraftFunds(float $newAmount): bool
+    {
+        return $newAmount >= 0;
+    }
 
-   
+    public function getOverdraftFundsAmount(): float
+    {
+        return 0.0;
+    }
+
+    #[Override]
+    public function getInterestRate(): int
+    {
+        return 1;
+    }
 }

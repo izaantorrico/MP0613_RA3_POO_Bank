@@ -28,9 +28,12 @@ try {
     // show balance account
     pl('My balance : ' . $bankAccount1->getBalance());
     // close account
-    pl('Close my account: ' . $bankAccount1->closeAcount());
+    $bankAccount1->closeAccount();
+    pl('My account is closed ' );
     // reopen account
-    pl('Reopen bank account : ' . $bankAccount1->reopenAcount());
+    
+     $bankAccount1->reopenAccount();
+    pl('My account is open ');
 
     // deposit +150 
     pl('Doing transaction deposit (+150) with current balance ' . $bankAccount1->getBalance());
@@ -48,7 +51,6 @@ try {
     pl('My new balance after withdrawal (-25): ' . $bankAccount1->getBalance());
     
     
-    pl('My new balance after withdrawal (-25) : ' . $bankAccount1->getBalance());
     
     // withdrawal -600
     pl('Doing transaction withdrawal (-600) with current balance ' . $bankAccount1->getBalance());
@@ -73,47 +75,47 @@ $bankAccount2 = new BankAccount(200.0, 'jane.doe@example.com');
 $bankAccount2->applyOverdraft(new SilverOverdraft());
 pl('--------- [Start testing bank account #2, Silver overdraft (100.0 funds)] --------');
 try {
+    pl('My balance : ' . $bankAccount2->getBalance());
 
-    // show balance account
     // deposit +100
     pl('Doing transaction deposit (+100) with current balance ' . $bankAccount2->getBalance());
-$bankAccount2->transaction(new DepositTransaction(100.0));   // tras "deposit (+100)"
-
+    $bankAccount2->transaction(new DepositTransaction(100.0));
     pl('My new balance after deposit (+100) : ' . $bankAccount2->getBalance());
 
     // withdrawal -300
-    pl('Doing transaction deposit (-300) with current balance ' . $bankAccount2->getBalance());
-$bankAccount2->transaction(new WithdrawTransaction(300.0));  // tras "(-300)"
-
+    pl('Doing transaction withdrawal (-300) with current balance ' . $bankAccount2->getBalance());
+    $bankAccount2->transaction(new WithdrawTransaction(300.0));
     pl('My new balance after withdrawal (-300) : ' . $bankAccount2->getBalance());
-$bankAccount2->transaction(new WithdrawTransaction(50.0));   // tras "(-50)"
 
     // withdrawal -50
-    pl('Doing transaction deposit (-50) with current balance ' . $bankAccount2->getBalance());
-
+    pl('Doing transaction withdrawal (-50) with current balance ' . $bankAccount2->getBalance());
+    $bankAccount2->transaction(new WithdrawTransaction(50.0));
     pl('My new balance after withdrawal (-50) with funds : ' . $bankAccount2->getBalance());
 
-    // withdrawal -120
-    $bankAccount2->transaction(new WithdrawTransaction(120.0));  // tras "(-120)" → debe fallar
-
+    // withdrawal -120 (debe fallar)
     pl('Doing transaction withdrawal (-120) with current balance ' . $bankAccount2->getBalance());
+    $bankAccount2->transaction(new WithdrawTransaction(120.0));
 } catch (FailedTransactionException $e) {
     pl('Error transaction: ' . $e->getMessage());
 }
 pl('My balance after failed last transaction : ' . $bankAccount2->getBalance());
 
 try {
+    // withdrawal -20 (debe pasar)
     pl('Doing transaction withdrawal (-20) with current balance : ' . $bankAccount2->getBalance());
+    $bankAccount2->transaction(new WithdrawTransaction(20.0));
 } catch (FailedTransactionException $e) {
     pl('Error transaction: ' . $e->getMessage());
 }
 pl('My new balance after withdrawal (-20) with funds : ' . $bankAccount2->getBalance());
-$bankAccount2->transaction(new WithdrawTransaction(20.0));   // dentro del segundo try → debe pasar
-
 try {
+    $bankAccount2->closeAccount();
+    pl("My account is now closed");
+    $bankAccount2->closeAccount();
 } catch (BankAccountException $e) {
     pl($e->getMessage());
 }
+ 
 pl('--------- [Start testing email validation] --------');
 try {
     $bankAccount3 = new BankAccount(100.0, 'john.smith@example.com');

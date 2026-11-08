@@ -64,7 +64,7 @@ class WithdrawTransactionTest extends TestCase
      * @dataProvider invalidAmountProvider
      * @expectedException ComBank\Exceptions\InvalidArgsException
      * */
-    public function testInvalidAmount($amount)
+    public function testInvalidAmount(float $amount)
     {
         $this->expectException(ZeroAmountException::class);
         new WithdrawTransaction($amount);

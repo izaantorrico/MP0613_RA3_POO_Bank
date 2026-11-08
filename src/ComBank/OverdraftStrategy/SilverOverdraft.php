@@ -7,11 +7,24 @@
  * Time: 1:39 PM
  */
 
+use ComBank\OverdraftStrategy\Contracts\OverdraftInterface;
+
 /**
  * @description: Grant 100.00 overdraft funds.
- * */
-class SilverOverdraft 
+ */
+class SilverOverdraft implements OverdraftInterface
 {
+    public function isGrantOverdraftFunds(float $newAmount): bool
+    {
+        return $newAmount >= -$this->getOverdraftFundsAmount();
+    }
 
-    
+    public function getOverdraftFundsAmount(): float
+    {
+        return 100.0;
+    }
+    public function getInterestRate(): int
+    {
+        return 5;
+    }
 }

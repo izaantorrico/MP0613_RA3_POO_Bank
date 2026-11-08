@@ -19,9 +19,9 @@ interface BankAccountInterface
 
    public function getBalance();
 
-    public function closeAcount();
+    public function closeAccount();
 
-    public function reopenAcount();
+    public function reopenAccount();
 
     public function transaction(BankTransactionInterface $bankTransaction):void;
     public function getStatus();
