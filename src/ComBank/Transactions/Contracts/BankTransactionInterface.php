@@ -17,4 +17,5 @@ interface BankTransactionInterface
     public function getAmount(): float;
     public function getTransactionInfo(): string;
     
+    
 }
