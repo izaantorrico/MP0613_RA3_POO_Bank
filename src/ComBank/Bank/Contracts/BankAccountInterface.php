@@ -30,6 +30,7 @@ interface BankAccountInterface
     public function getOverdraft(): OverdraftInterface;
 
     public function getEmail(): string;
+    public function isOpen(): bool;
 
     public function setEmail(string $email): void;
 

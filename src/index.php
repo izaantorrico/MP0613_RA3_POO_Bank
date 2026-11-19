@@ -7,6 +7,7 @@
  * Time: 7:24 PM
  */
 
+use ComBank\Transactions\TransferTransaction;
 use ComBank\Bank\BankAccount;
 use ComBank\OverdraftStrategy\SilverOverdraft;
 use ComBank\Transactions\DepositTransaction;
@@ -15,6 +16,9 @@ use ComBank\Exceptions\BankAccountException;
 use ComBank\Exceptions\FailedTransactionException;
 use ComBank\Exceptions\ZeroAmountException;
 use ComBank\Exceptions\InvalidArgsException;
+use ComBank\Bank\BankNationalAccount;
+use PhpParser\Node\Stmt\TryCatch;
+
 
 require_once 'bootstrap.php';
 
@@ -115,7 +119,34 @@ try {
 } catch (BankAccountException $e) {
     pl($e->getMessage());
 }
+ pl('--------- [Testing National Bank Account] --------');
+
+try{
+ $bankAccount3 = new BankNationalAccount(500.0, '$');
+ pl('Currency: ' . $bankAccount3->getCurrency());
+ pl('balance: ' . $bankAccount3->getBalance());
+   pl('balance: ' . $bankAccount3->getBalance() . $bankAccount3->getCurrency());
+
+ //pl($bankAccount3->getFormattedBalance());
  
+ }catch(InvalidArgsException){
+    pl("Account creation rejected due to an invalid currency value.");
+s
+
+ }
+ try{
+ $bankAccount3 = new BankNationalAccount(500.0, '@');
+ pl('Currency: ' . $bankAccount3->getCurrency());
+ pl('balance: ' . $bankAccount3->getBalance());
+  pl('balance: ' . $bankAccount3->getBalance() . $bankAccount3->getCurrency());
+
+  //pl($bankAccount3->getFormattedBalance());
+
+ 
+ }catch(InvalidArgsException){
+    pl("Account creation rejected due to an invalid currency value.");
+
+ }
 pl('--------- [Start testing email validation] --------');
 try {
     $bankAccount3 = new BankAccount(100.0, 'john.smith@example.com');
@@ -130,3 +161,29 @@ try {
 } catch (InvalidArgsException $e) {
     pl('Account creation rejected: ' . $e->getMessage());
 }
+pl('--------- [Testing transfer transaction] --------');
+try {
+    $source = new BankAccount(500.0);
+    $destination = new BankAccount(200.0);
+    pl('Source balance: ' . $source->getBalance());
+    pl('Destination balance: ' . $destination->getBalance());
+
+    pl('Doing transfer (100) from source to destination');
+    $source->transaction(new TransferTransaction(100.0, $destination));
+    pl('Source balance after transfer: ' . $source->getBalance());
+    pl('Destination balance after transfer: ' . $destination->getBalance());
+
+    pl('Doing transfer (1000) from source to destination');
+    $source->transaction(new TransferTransaction(1000.0, $destination));
+} catch (ZeroAmountException $e) {
+    pl($e->getMessage());
+} catch (BankAccountException $e) {
+    pl('Error: ' . $e->getMessage());
+} catch (FailedTransactionException $e) {
+    pl('Error transaction: ' . $e->getMessage());
+}
+pl('Source balance after failed transfer: ' . $source->getBalance());
+pl('Destination balance after failed transfer: ' . $destination->getBalance());
+
+ 
+    
